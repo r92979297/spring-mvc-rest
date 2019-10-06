@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 public class Bootstrap implements CommandLineRunner
 {
 
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public Bootstrap(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args){
         Category fruits = new Category();
         fruits.setName("Fruits");
 
