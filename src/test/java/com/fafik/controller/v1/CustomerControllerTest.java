@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -19,10 +20,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,6 +104,49 @@ public class CustomerControllerTest extends AbstractRestController{
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(asJsonString(customerDTO)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName",equalTo("Fred")))
+                .andExpect(jsonPath("$.lastName",equalTo("Flinstone")))
+                .andExpect(jsonPath("$.customerUrl",equalTo("/api/v1/customers/1")));
+    }
+
+    @Test
+    public void testUpdateCustomer() throws Exception {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstName("Fred");
+        customerDTO.setLastName("Flinstone");
+
+        CustomerDTO returnDto = new CustomerDTO();
+        returnDto.setFirstName(customerDTO.getFirstName());
+        returnDto.setLastName(customerDTO.getLastName());
+        returnDto.setCustomerUrl("/api/v1/customers/1");
+
+        when(customerService.saveCustomerDTO(anyLong(),any(CustomerDTO.class))).thenReturn(returnDto);
+
+        mockMvc.perform(put("/api/v1/customers/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(customerDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName",equalTo("Fred")))
+                .andExpect(jsonPath("$.lastName",equalTo("Flinstone")))
+                .andExpect(jsonPath("$.customerUrl",equalTo("/api/v1/customers/1")));
+    }
+
+    @Test
+    public void testPatchCustomer() throws Exception {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstName("Fred");
+
+        CustomerDTO returnDto = new CustomerDTO();
+        returnDto.setFirstName(customerDTO.getFirstName());
+        returnDto.setLastName("Flinstone");
+        returnDto.setCustomerUrl("/api/v1/customers/1");
+
+        when(customerService.patchCustomer(anyLong(),any(CustomerDTO.class))).thenReturn(returnDto);
+
+        mockMvc.perform(patch("/api/v1/customers/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(customerDTO)))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName",equalTo("Fred")))
                 .andExpect(jsonPath("$.lastName",equalTo("Flinstone")))
                 .andExpect(jsonPath("$.customerUrl",equalTo("/api/v1/customers/1")));
