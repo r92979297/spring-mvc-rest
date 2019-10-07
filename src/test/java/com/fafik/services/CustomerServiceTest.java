@@ -4,6 +4,7 @@ import com.fafik.api.v1.mapper.CategoryMapper;
 import com.fafik.api.v1.mapper.CustomerMapper;
 import com.fafik.api.v1.model.CategoryDTO;
 import com.fafik.api.v1.model.CustomerDTO;
+import com.fafik.controller.v1.CustomerController;
 import com.fafik.domain.Category;
 import com.fafik.domain.Customer;
 import com.fafik.repositories.CategoryRepository;
@@ -82,7 +83,7 @@ public class CustomerServiceTest {
         CustomerDTO savedDto = customerService.createNewCustomer(customerDTO);
 
         assertEquals(customerDTO.getFirstName(),savedDto.getFirstName());
-        assertEquals("/api/v1/customer/"+ID,savedDto.getCustomerUrl());
+        assertEquals(CustomerController.BASE_URL+"/"+ID,savedDto.getCustomerUrl());
     }
 
     @Test

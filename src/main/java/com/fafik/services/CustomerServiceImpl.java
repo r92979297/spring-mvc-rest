@@ -2,6 +2,7 @@ package com.fafik.services;
 
 import com.fafik.api.v1.mapper.CustomerMapper;
 import com.fafik.api.v1.model.CustomerDTO;
+import com.fafik.controller.v1.CustomerController;
 import com.fafik.domain.Customer;
 import com.fafik.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/"+customer.getId());
+                    customerDTO.setCustomerUrl(getCustomerUrl(customer.getId()));
                     return customerDTO;
                 })
                 .collect(Collectors.toList());
@@ -48,7 +49,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer savedCustomer = customerRepository.save(customer);
         CustomerDTO returnDto = customerMapper.customerToCustomerDTO(savedCustomer);
-        returnDto.setCustomerUrl("/api/v1/customer/"+savedCustomer.getId());
+        returnDto.setCustomerUrl(getCustomerUrl(savedCustomer.getId()));
         return returnDto;
     }
 
@@ -71,12 +72,14 @@ public class CustomerServiceImpl implements CustomerService {
                         customer.setLastName(customerDTO.getLastName());
                     }
                     CustomerDTO returnDTO =customerMapper.customerToCustomerDTO(customerRepository.save(customer));
-                    returnDTO.setCustomerUrl("/api/v1/customer/"+customer.getId());
+                    returnDTO.setCustomerUrl(getCustomerUrl(customer.getId()));
                     return returnDTO;
                 })
                 .orElseThrow(RuntimeException::new);
     }
-
+    private String getCustomerUrl(Long id){
+        return CustomerController.BASE_URL+"/"+id;
+    }
     @Override
     public void deleteCustomerById(Long id) {
         customerRepository.deleteById(id);
